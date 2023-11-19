@@ -124,3 +124,33 @@ body {
     padding: 10px;
   }
   
+  /* Styles pour ordinateurs de bureau */
+@media screen and (min-width: 1024px) {
+  .logout{
+      width: 200px;
+      font-size: 25px;
+  }
+  #container{
+      padding: 0;
+  }
+  #container h1{
+      font-size: 40px;
+      text-decoration: underline;
+  }
+  #userform {
+    max-width: 50%;
+  }
+  #userform input {
+    padding: 20px;
+    font-size: 20px;
+  }
+  #userform select {
+    font-size: 20px;      
+  }
+  #userform button {
+    width: 60%;
+    padding: 10px;
+    font-size: 20px;
+    margin-top: 20px;
+  }
+}
