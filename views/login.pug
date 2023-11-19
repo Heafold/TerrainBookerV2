@@ -7,8 +7,11 @@ html
       a(href="/") 
         img.logo(src="/img/logo.png", alt="logo")
     #container
+      if messages.error
+        .alert.alert-danger
+          each error in messages.error
+            p= error
       form#loginform(action="/auth/login", method="post")
         input#username(type="text", name="username", placeholder="Votre Nom D'Utilisateur")
         input#password(type="password", name="password", placeholder="Votre Mot de Passe")
         button(type="submit") Se Connecter
-    script(src="/js/login.js")

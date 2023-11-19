@@ -1,0 +1,44 @@
+html
+  head
+    title TerrainBooker - Admin - Users
+    link(rel='stylesheet', href='/css/admin/users.css')
+    script(src='/js/admin/users.js') // Lien vers ton script JavaScript
+  body
+    #header
+      img.logo(src="/img/logo.png", alt="logo")
+      .logout
+        a(href="/auth/logout") Se déconnecter
+
+    #container
+      h1 Utilisateurs
+      a(href="/admin/users/new") 
+        button.newuserButton Créer un nouvel utilisateur
+
+      // Modale de confirmation de suppression
+      #deleteUserModal.modal
+        .modal-content
+          span.closeButton &times;
+          h2 Confirmer la Suppression
+          p Êtes-vous sûr de vouloir supprimer cet utilisateur ?
+          form(action="/admin/users/delete", method="post")
+            input(type="hidden", name="userId")
+            button(type="submit") Confirmer
+            button.closeButton(type="button", onclick="closeModal('deleteUserModal')") Annuler
+
+      .users
+        if results.users && results.users.length > 0
+          each user in results.users
+            .user
+              p #{user.username}
+              .modifuserButton
+                a(href=`/admin/users/edit/${user._id}`) Modifier
+              .deleteuserButton(onclick=`confirmDelete('${user._id}', '${user.username}')`) Supprimer
+            hr
+        else
+          p Aucun utilisateur trouvé
+
+      // Pagination
+      if results.currentPage > 1
+        a(href=`/admin/users?page=${results.currentPage - 1}`) Précédent
+      if results.currentPage < results.totalPages
+        a(href=`/admin/users?page=${results.currentPage + 1}`) Suivant

@@ -1,0 +1,23 @@
+html
+  head
+    title TerrainBooker - Admin
+    link(rel='stylesheet', href='/css/admin/dashboard.css')
+  body
+    #header
+      img.logo(src="/img/logo.png", alt="logo")
+      .logout
+        a(href="/auth/logout") Se déconnecter
+    #container
+        h1 Dashboard
+        .users
+            if userCount
+                p Nombre d'utilisateurs : #{userCount}
+                a.userbutton(href="/admin/users") Voir les utilisateurs
+            else 
+                a.userbutton(href="/admin/users") Voir les utilisateurs
+        .reservations 
+            if reservCount
+                p Nombre de réservations : #{reservCount}
+                a.reservationbutton(href="/admin/users") Voir les réservations 
+            else 
+                a.reservationbutton(href="/admin/users") Voir les réservations

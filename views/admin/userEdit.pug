@@ -1,0 +1,23 @@
+html
+  head
+    title TerrainBooker - Admin - EditUser
+    link(rel='stylesheet', href='/css/admin/editUser.css')
+  body
+    #header
+      img.logo(src="/img/logo.png", alt="logo")
+      .logout
+        a(href="/auth/logout") Se déconnecter
+    #container
+        h1 Modifier : #{user.username}
+        if messages.error
+          .alert.alert-danger
+            each error in messages.error
+              p= error
+        form#userform(action=`/admin/users/edit/${user._id}`, method="post")
+          input#username(type="text", name="username", placeholder=`${user.username}`)
+          input#password(type="password", name="password", placeholder="Mot de Passe")
+          select#profile(name="profile")
+            option(value="Admin", selected=user.profile === 'Admin' ? true : false) Admin
+            option(value="User", selected=user.profile === 'User' ? true : false) Utilisateur
+
+          button(type="submit") Modifier

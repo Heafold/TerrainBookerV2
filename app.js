@@ -4,6 +4,7 @@ const session = require("express-session");
 const mongoose = require("mongoose");
 const port = 3000;
 require("dotenv").config();
+const flash = require("connect-flash");
 
 const dbUrl = process.env.DB_MONGO;
 mongoose.connect(dbUrl, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -26,16 +27,27 @@ app.use(
   })
 );
 
-app.use(express.static('public'));
+app.use(flash());
 
+app.use((req, res, next) => {
+  res.locals.messages = req.flash();
+  next();
+});
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+app.use(express.static("public"));
 
 app.set("view engine", "pug");
 
-const userRoutes = require('./routes/user');
-const authRoutes = require('./routes/auth');
+const userRoutes = require("./routes/user");
+const authRoutes = require("./routes/auth");
+const adminRoutes = require("./routes/admin");
 
-app.use('/user', userRoutes);
-app.use('/auth', authRoutes);
+app.use("/user", userRoutes);
+app.use("/auth", authRoutes);
+app.use("/admin", adminRoutes);
 
 app.get("/", (req, res) => {
   res.render("index");

@@ -1,0 +1,22 @@
+html
+  head
+    title TerrainBooker - Admin - NewUser
+    link(rel='stylesheet', href='/css/admin/newUser.css')
+  body
+    #header
+      img.logo(src="/img/logo.png", alt="logo")
+      .logout
+        a(href="/auth/logout") Se déconnecter
+    #container
+        h1 Nouvel utilisateur
+        if messages.error
+          .alert.alert-danger
+            each error in messages.error
+              p= error
+        form#userform(action="/admin/users/new", method="post")
+          input#username(type="text", name="username", placeholder="Nom D'Utilisateur")
+          input#password(type="password", name="password", placeholder="Mot de Passe")
+          select#profile(name="profile")
+            option(value="Admin") Admin
+            option(value="User") Utilisateur  
+          button(type="submit") Créer
