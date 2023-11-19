@@ -28,7 +28,7 @@ html
         if results.reservs && results.reservs.length > 0
           each reserv in results.reservs
             .reserv
-              p #{reserv.terrain}
+              p #{reserv.user.username} - #{reserv.terrain} -  #{reserv.reservationDate} - #{reserv.reservationTime}
               .deletereservButton(onclick=`confirmDelete('${reserv._id}')`) Supprimer
             hr
         else

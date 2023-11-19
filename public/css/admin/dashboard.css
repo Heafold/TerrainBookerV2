@@ -37,6 +37,7 @@ body {
     text-align: center;
     width: 100%;
     padding: 100px;
+    margin-bottom: 100px;
 }
 
 #container h1{
@@ -74,4 +75,35 @@ body {
     background-color: black;
     padding: 20px;
     border-radius: 20px;
+}
+
+/* Styles pour ordinateurs de bureau */
+@media screen and (min-width: 1024px) {
+    .logout{
+        width: 200px;
+        font-size: 25px;
+    }
+    #container{
+        padding: 0;
+    }
+    #container h1{
+        font-size: 40px;
+        text-decoration: underline;
+    }
+    #container .users{
+        margin-top: 2%;
+        font-size: 20px;
+        justify-content: center;
+    }
+    #container .userbutton{
+        margin-left: 2%;
+    }
+    #container .reservations{
+        margin-top: 2%;
+        font-size: 20px;
+        justify-content: center;
+    }
+    #container .reservationbutton{
+        margin-left: 2%;
+    }
 }

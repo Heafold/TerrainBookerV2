@@ -41,7 +41,8 @@ body {
 }
 
 .card{
-    width: 800px;
+    width: 90%;
+    height: 800px;
     background-color: black;
     color: white;
     text-align: center;
@@ -67,8 +68,30 @@ body {
     text-decoration: underline;
 }
 
-/* Styles pour tablettes */
-@media screen and (min-width: 768px) {}
 
 /* Styles pour ordinateurs de bureau */
-@media screen and (min-width: 1024px) {}
+@media screen and (min-width: 1024px) {
+    .login{
+        width: 200px;
+        font-size: 25px;
+    }
+    #container{
+        margin-top: 0;
+    }
+    .card{
+        width: 50%;
+        height: 600px;
+        padding: 2%;
+    }
+    .card h1{
+        font-size: 40px;
+    }
+    .card img{
+        margin-top: 5%;
+        margin-bottom: 5%;
+        height: 70%;
+    }
+    .card p{
+        font-size: 30px;
+    }
+}

@@ -138,7 +138,19 @@ router.post("/users/new", isAdmin, async (req, res) => {
   
     try {
       results.totalCount = await ReservationModel.countDocuments();
-      results.reservs = await ReservationModel.find().limit(limit).skip(startIndex);
+      results.reservs = await ReservationModel.find().limit(limit).skip(startIndex).populate('user');
+
+      results.reservs = results.reservs.map(reserv => {
+        return {
+          ...reserv.toObject(),
+          reservationDate: reserv.reservationDate.toLocaleDateString('fr-FR', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+          }),
+        };
+      });
   
       results.totalPages = Math.ceil(results.totalCount / limit);
       results.currentPage = page;

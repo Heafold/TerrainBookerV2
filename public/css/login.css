@@ -69,3 +69,20 @@ body {
     background-color: #333;
   }
   
+  @media screen and (min-width: 1024px) {
+    #loginform {
+      max-width: 40%;
+
+    }
+    
+  #loginform input {
+      padding: 20px;
+      font-size: 20px;
+    }
+    
+  #loginform button {
+      padding: 20px;
+      font-size: 20px;
+      margin-top: 20px;
+    }
+  }
