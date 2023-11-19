@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const UserModel = require("../models/User");
+const ReservationModel = require("../models/Reservation");
 
 // Middleware pour vérifier si l'utilisateur est un utilisateur standard
 function isUser(req, res, next) {
@@ -11,22 +12,73 @@ function isUser(req, res, next) {
   }
 }
 
-router.get("/dashboard", isUser ,async (req, res) => {
-  if (req.session.userId) {
+router.get("/dashboard", isUser, async (req, res) => {
     try {
-      const user = await UserModel.findOne({ _id: req.session.userId });
-      if (user) {
-        res.render("dashboard", { user });
-      } else {
-        res.redirect("/login");
-      }
+      const userId = req.session.user.id;
+  
+      const user = await UserModel.findById(userId);
+      let reservs = await ReservationModel.find({ user: userId });
+
+      reservs = reservs.map(reserv => {
+        return {
+          ...reserv.toObject(),
+          reservationDate: reserv.reservationDate.toLocaleDateString('fr-FR', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+          }),
+        };
+      });
+  
+      res.render("user/dashboard", { user, reservs });
     } catch (error) {
-      console.error(error);
-      res.redirect("/login");
+      console.error("Erreur lors de la récupération des données:", error);
+      res.status(500).send("Erreur interne du serveur");
     }
-  } else {
-    res.redirect("/login");
-  }
-});
+  });
+  
+
+  
+  router.get("/reservs/new", isUser, async (req, res) => {
+    res.render("user/reservNew");
+  });
+
+  router.post("/reservs/new", isUser, async (req, res) => {
+    const { terrain, reservationDate, reservationTime } = req.body;
+  
+    try {
+      const newReservation = new ReservationModel({
+        terrain,
+        user: req.session.user.id,
+        reservationDate,
+        reservationTime
+      });
+  
+      await newReservation.save();
+      res.redirect("/user/dashboard")
+    } catch (error) {
+      console.error("Erreur lors de la création de la réservation:", error);
+      res.redirect("/user/reservs/new")
+    }
+  });
+  
+  router.post("/reservs/delete/:id", isUser, async (req, res) => {
+    const reservID = req.params.id;
+  
+    try {
+      const reserv = await ReservationModel.findByIdAndDelete(reservID);
+  
+      if (!reserv) {
+        req.flash('error', "Réservation non trouvé ou déjà supprimé.");
+        return res.redirect('/user/dashboard');
+      }
+      res.redirect('/user/dashboard');
+    } catch (error) {
+      console.error("Erreur lors de la suppression de la réservation:", error);
+      req.flash('error', "Erreur lors de la suppression de la réservation.");
+      res.redirect('/user/dashboard');
+    }
+  });
 
 module.exports = router;

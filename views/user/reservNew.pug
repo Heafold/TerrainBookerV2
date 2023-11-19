@@ -1,0 +1,26 @@
+html
+  head
+    title TerrainBooker - User - Newrserv
+    link(rel='stylesheet', href='/css/user/newReserv.css')
+  body
+    #header
+      a(href="/user/dashboard") 
+        img.logo(src="/img/logo.png", alt="logo")
+      .logout
+        a(href="/auth/logout") Se déconnecter
+    #container
+        h1 Nouvelle Réservation
+        if messages.error
+          .alert.alert-danger
+            each error in messages.error
+              p= error
+        
+        form#reservform(action="/user/reservs/new", method="post")
+          select#terrain(name="terrain")
+            option(value="Robecq") Robecq
+            option(value="Calonne") Calonne
+            option(value="StVenant") StVenant
+          input#reservationDate(type="date", name="reservationDate", required)
+          input#reservationTime(type="time", name="reservationTime", required)
+          button(type="submit") Créer
+

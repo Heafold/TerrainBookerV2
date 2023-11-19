@@ -1,0 +1,41 @@
+html
+  head
+    title TerrainBooker - Admin - Reservs
+    link(rel='stylesheet', href='/css/admin/reservs.css')
+    script(src='/js/admin/reservs.js')
+  body
+    #header
+      a(href="/admin/dashboard") 
+        img.logo(src="/img/logo.png", alt="logo")
+      .logout
+        a(href="/auth/logout") Se déconnecter
+
+    #container
+      h1 Réservations
+
+      // Modale de confirmation de suppression
+      #deleteReservModal.modal
+        .modal-content
+          span.closeButton &times;
+          h2 Confirmer la Suppression
+          p Êtes-vous sûr de vouloir supprimer cette réservation ?
+          form(action="/admin/reservs/delete", method="post")
+            input(type="hidden", name="reservId")
+            button(type="submit") Confirmer
+            button.closeButton(type="button", onclick="closeModal('deleteReservModal')") Annuler
+
+      .reservs
+        if results.reservs && results.reservs.length > 0
+          each reserv in results.reservs
+            .reserv
+              p #{reserv.terrain}
+              .deletereservButton(onclick=`confirmDelete('${reserv._id}')`) Supprimer
+            hr
+        else
+          p Aucune réservation trouvée
+
+      // Pagination
+      if results.currentPage > 1
+        a(href=`/admin/reservs?page=${results.currentPage - 1}`) Précédent
+      if results.currentPage < results.totalPages
+        a(href=`/admin/reservs?page=${results.currentPage + 1}`) Suivant

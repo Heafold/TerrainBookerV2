@@ -2,10 +2,11 @@ html
   head
     title TerrainBooker - Admin - Users
     link(rel='stylesheet', href='/css/admin/users.css')
-    script(src='/js/admin/users.js') // Lien vers ton script JavaScript
+    script(src='/js/admin/users.js')
   body
     #header
-      img.logo(src="/img/logo.png", alt="logo")
+      a(href="/admin/dashboard") 
+        img.logo(src="/img/logo.png", alt="logo")
       .logout
         a(href="/auth/logout") Se déconnecter
 

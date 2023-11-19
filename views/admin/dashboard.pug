@@ -4,7 +4,8 @@ html
     link(rel='stylesheet', href='/css/admin/dashboard.css')
   body
     #header
-      img.logo(src="/img/logo.png", alt="logo")
+      a(href="/admin/dashboard") 
+        img.logo(src="/img/logo.png", alt="logo")
       .logout
         a(href="/auth/logout") Se déconnecter
     #container
@@ -18,6 +19,6 @@ html
         .reservations 
             if reservCount
                 p Nombre de réservations : #{reservCount}
-                a.reservationbutton(href="/admin/users") Voir les réservations 
+                a.reservationbutton(href="/admin/reservs") Voir les réservations 
             else 
-                a.reservationbutton(href="/admin/users") Voir les réservations
+                a.reservationbutton(href="/admin/reservs") Voir les réservations

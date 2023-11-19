@@ -1,0 +1,44 @@
+html
+  head
+    title TerrainBooker - User
+    link(rel='stylesheet', href='/css/user/dashboard.css')
+    script(src='/js/user/dashboard.js')
+  body
+    #header
+      a(href="/user/dashboard") 
+        img.logo(src="/img/logo.png", alt="logo")
+      .logout
+        a(href="/auth/logout") Se déconnecter
+    #container
+        h1 Bienvenue #{user.username}
+        if messages.error
+          .alert.alert-danger
+            each error in messages.error
+              p= error
+
+        // Modale de confirmation de suppression
+        #deleteReservModal.modal
+          .modal-content
+            span.closeButton &times;
+            h2 Confirmer la Suppression
+            p Êtes-vous sûr de vouloir supprimer cette réservation ?
+            form(action="/user/reservs/delete", method="post")
+              input(type="hidden", name="reservId")
+              button(type="submit") Confirmer
+              button.closeButton(type="button", onclick="closeModal('deleteReservModal')") Annuler
+
+        a(href="/user/reservs/new") 
+            button.newreservButton Faire une réservation
+        .reservations 
+            if reservs && reservs.length > 0
+                
+                p Mes réservations : 
+                .reverscontainer 
+                    each reserv in reservs                    
+                        p Date : #{reserv.reservationDate}
+                        p Heure : #{reserv.reservationTime}
+                        p Terrain : #{reserv.terrain}
+                        .deletereservButton(onclick=`confirmDelete('${reserv._id}')`) Supprimer
+            else 
+                .reverscontainer 
+                    p Vous n'avez aucune réservation

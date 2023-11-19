@@ -127,4 +127,46 @@ router.post("/users/new", isAdmin, async (req, res) => {
     }
   });
 
+  router.get("/reservs", isAdmin, async (req, res) => {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+  
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+  
+    const results = {};
+  
+    try {
+      results.totalCount = await ReservationModel.countDocuments();
+      results.reservs = await ReservationModel.find().limit(limit).skip(startIndex);
+  
+      results.totalPages = Math.ceil(results.totalCount / limit);
+      results.currentPage = page;
+  
+      res.render("admin/reservs", { results });
+    } catch (error) {
+      console.error("Erreur lors de la récupération des réservations:", error);
+      res.status(500).send("Erreur interne du serveur");
+    }
+  });
+
+  router.post("/reservs/delete/:id", isAdmin, async (req, res) => {
+    const reservID = req.params.id;
+  
+    try {
+      const reserv = await ReservationModel.findByIdAndDelete(reservID);
+  
+      if (!reserv) {
+        req.flash('error', "Réservation non trouvé ou déjà supprimé.");
+        return res.redirect('/admin/reservs');
+      }
+  
+      res.redirect('/admin/reservs');
+    } catch (error) {
+      console.error("Erreur lors de la suppression de la réservation:", error);
+      req.flash('error', "Erreur lors de la suppression de la réservation.");
+      res.redirect('/admin/reservs');
+    }
+  });
+
 module.exports = router;
