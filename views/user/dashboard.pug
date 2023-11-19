@@ -42,3 +42,15 @@ html
             else 
                 .reverscontainer 
                     p Vous n'avez aucune réservation
+        .reservations 
+            if allreservs && allreservs.length > 0
+                p Toutes les réservations :
+                .reverscontainer
+                  each reserv in allreservs    
+                        p User : #{reserv.user.username}                
+                        p Date : #{reserv.reservationDate}
+                        p Heure : #{reserv.reservationTime}
+                        p Terrain : #{reserv.terrain}
+            else 
+                .reverscontainer 
+                    p Il n'y a aucune réservation

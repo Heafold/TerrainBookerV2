@@ -18,6 +18,8 @@ router.get("/dashboard", isUser, async (req, res) => {
   
       const user = await UserModel.findById(userId);
       let reservs = await ReservationModel.find({ user: userId });
+      let allreservs = await ReservationModel.find({ user: { $ne: userId } })
+                                             .populate('user');
 
       reservs = reservs.map(reserv => {
         return {
@@ -30,8 +32,20 @@ router.get("/dashboard", isUser, async (req, res) => {
           }),
         };
       });
+
+      allreservs = allreservs.map(allreserv => {
+        return {
+          ...allreserv.toObject(),
+          reservationDate: allreserv.reservationDate.toLocaleDateString('fr-FR', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+          }),
+        };
+      });
   
-      res.render("user/dashboard", { user, reservs });
+      res.render("user/dashboard", { user, reservs, allreservs});
     } catch (error) {
       console.error("Erreur lors de la récupération des données:", error);
       res.status(500).send("Erreur interne du serveur");

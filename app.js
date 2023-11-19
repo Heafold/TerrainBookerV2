@@ -1,10 +1,12 @@
 const express = require("express");
 const app = express();
+const cron = require('node-cron');
 const session = require("express-session");
 const mongoose = require("mongoose");
 const port = 3000;
 require("dotenv").config();
 const flash = require("connect-flash");
+const ReservationModel = require('./models/Reservation');
 
 const dbUrl = process.env.DB_MONGO;
 mongoose.connect(dbUrl, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -51,6 +53,19 @@ app.use("/admin", adminRoutes);
 
 app.get("/", (req, res) => {
   res.render("index");
+});
+
+// Tâche cron pour s'exécuter tous les jours à 19h00
+cron.schedule('0 19 * * *', async () => {
+  try {
+    const now = new Date();
+    await ReservationModel.deleteMany({ 
+      reservationDate: { $lt: now }
+    });
+    console.log('Réservations passées supprimées avec succès.');
+  } catch (error) {
+    console.error('Erreur lors de la suppression des réservations:', error);
+  }
 });
 
 app.listen(port, () => {
