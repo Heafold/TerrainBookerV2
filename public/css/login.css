@@ -1,0 +1,52 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+body {
+    max-width: 100%;
+}
+
+#header{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+#loginform {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    max-width: 80%;
+    margin: 50px auto;
+    border-radius: 20px;
+  }
+  
+#loginform input {
+    width: 100%;
+    padding: 40px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 40px;
+  }
+  
+#loginform button {
+    width: 100%;
+    padding: 30px;
+    background-color: black;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 40px;
+    border-radius: 20px;
+    margin-top: 40px;
+  }
+  
+#loginform button:hover {
+    background-color: #333;
+  }
+  

@@ -13,13 +13,13 @@ router.post("/login", async (req, res) => {
     const user = await UserModel.findOne({ username });
 
     if (!user) {
-      return res.redirect("/login?error=1");
+      return res.redirect("/auth/login");
     }
 
     const isPasswordValid = await user.comparePassword(password);
 
     if (!isPasswordValid) {
-      return res.redirect("/login?error=2");
+      return res.redirect("/auth/login");
     }
 
     req.session.userId = user._id;
@@ -27,7 +27,7 @@ router.post("/login", async (req, res) => {
     res.redirect("/dashboard");
   } catch (error) {
     console.error(error);
-    res.redirect("/login?error=3");
+    res.redirect("/auth/login");
   }
 });
 

@@ -3,4 +3,13 @@ html
     title TerrainBooker - Accueil
     link(rel='stylesheet', href='/css/index.css')
   body
-    h1 Bienvenue ! 
+    #header
+      img.logo(src="/img/logo.png", alt="logo")
+      .login
+        a(href="/auth/login") Se connecter
+    #container
+      .card
+        h1 TerrainBooker
+        img(src="/img/terrain-robecq.jpeg", alt="terrain-robecq")
+        p AS LYSSOIS
+    script(src="/js/index.js")
