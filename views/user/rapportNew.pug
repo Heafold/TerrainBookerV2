@@ -1,0 +1,27 @@
+html
+  head
+    title TerrainBooker - User - Newrapport
+    link(rel='stylesheet', href='/css/user/newRapport.css')
+  body
+    #header
+      a(href="/user/dashboard") 
+        img.logo(src="/img/logo.png", alt="logo")
+      .logout
+        a(href="/auth/logout") Se déconnecter
+    #container
+        h1 Faire un rapport
+        if messages.error
+          .alert.alert-danger
+            each error in messages.error
+              p= error
+        if reservations && reservations.length > 0
+            form#rapportform(action="/user/rapports/new", method="post")
+                label(for="reservation") Date de la réservation 
+                select#reservation(name="reservation")
+                    each reservation in reservations
+                        option(value=`${reservation._id}`) #{reservation.reservationDate}
+                label(for="observations") Observations
+                input#observations(type="text", name="observations", required)
+                button(type="submit") Créer
+        else 
+            p Aucun rapport disponible.

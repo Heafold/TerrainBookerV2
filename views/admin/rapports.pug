@@ -1,0 +1,38 @@
+html
+  head
+    title TerrainBooker - Admin - Rapports
+    link(rel='stylesheet', href='/css/admin/rapports.css')
+    script(src='/js/admin/rapports.js')
+  body
+    #header
+      a(href="/admin/dashboard") 
+        img.logo(src="/img/logo.png", alt="logo")
+      .logout
+        a(href="/auth/logout") Se déconnecter
+
+    #container
+      h1 Rapports
+
+      // Modale de confirmation de suppression
+      #deleteRapportModal.modal
+        .modal-content
+          span.closeButton &times;
+          h2 Confirmer la Suppression
+          p Êtes-vous sûr de vouloir supprimer cette réservation ?
+          form(action="/admin/rapports/delete", method="post")
+            input(type="hidden", name="rapportId")
+            button(type="submit") Confirmer
+            button.closeButton(type="button", onclick="closeModal('deleteRapportModal')") Annuler
+
+      .rapports
+        if rapports && rapports.length > 0
+          each rapport in rapports
+            .rapport
+              - var dateFormatted = new Date(rapport.dateRapport).toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
+              p #{rapport.reservation.user.username} - #{rapport.reservation.terrain} - #{dateFormatted} 
+              p Observation - "#{rapport.observations}"
+              .deleterapportButton(onclick=`confirmDelete('${rapport._id}')`) Supprimer
+            hr
+        else
+          p Aucun rapport trouvé
+

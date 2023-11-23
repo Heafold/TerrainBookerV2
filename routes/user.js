@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const UserModel = require("../models/User");
 const ReservationModel = require("../models/Reservation");
+const RapportModel = require("../models/Rapport");
 
 // Middleware pour vérifier si l'utilisateur est un utilisateur standard
 function isUser(req, res, next) {
@@ -94,5 +95,55 @@ router.get("/dashboard", isUser, async (req, res) => {
       res.redirect('/user/dashboard');
     }
   });
+
+
+  router.get("/rapports/new", isUser, async (req, res) => {
+    try {
+      const userId = req.session.user.id;
+  
+      const rapportsExistants = await RapportModel.find({}).select('reservation');
+      const reservationsAvecRapport = rapportsExistants.map(rapport => rapport.reservation);
+  
+      let reservations = await ReservationModel.find({
+        user: userId,
+        _id: { $nin: reservationsAvecRapport }
+      });
+  
+      reservations = reservations.map(reserv => {
+        return {
+          ...reserv.toObject(),
+          reservationDate: reserv.reservationDate.toLocaleDateString('fr-FR', {
+              weekday: 'long',
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+          }),
+        };
+      });
+  
+      res.render("user/rapportNew", { reservations });
+    } catch (error) {
+      console.error("Erreur lors de la récupération des données:", error);
+      res.status(500).send("Erreur interne du serveur");
+    }
+  });
+
+  router.post("/rapports/new", isUser, async (req, res) => {
+    const { reservation , observations} = req.body;
+  
+    try {
+      const newRapport = new RapportModel({
+        reservation,
+        observations
+      });
+  
+      await newRapport.save();
+      res.redirect("/user/dashboard")
+    } catch (error) {
+      console.error("Erreur lors de la création du rapport:", error);
+      res.redirect("/user/rapports/new")
+    }
+  });
+  
 
 module.exports = router;

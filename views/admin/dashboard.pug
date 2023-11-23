@@ -22,3 +22,9 @@ html
                 a.reservationbutton(href="/admin/reservs") Voir les réservations 
             else 
                 a.reservationbutton(href="/admin/reservs") Voir les réservations
+        .rapports
+            if rapportCount
+                p Nombre de rapports : #{rapportCount}
+                a.rapportbutton(href="/admin/rapports") Voir les rapports 
+            else 
+                a.rapportbutton(href="/admin/rapports") Voir les rapports

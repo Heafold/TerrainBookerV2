@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const UserModel = require("../models/User");
 const ReservationModel = require("../models/Reservation");
+const RapportModel = require("../models/Rapport");
 
 // Middleware pour vérifier si l'utilisateur est un admin
 function isAdmin(req, res, next) {
@@ -16,8 +17,9 @@ router.get("/dashboard", isAdmin, async (req, res) => {
   try {
     const userCount = await UserModel.countDocuments();
     const reservCount = await ReservationModel.countDocuments();
+    const rapportCount = await RapportModel.countDocuments();
 
-    res.render("admin/dashboard", { userCount, reservCount });
+    res.render("admin/dashboard", { userCount, reservCount, rapportCount });
   } catch (error) {
     console.error("Erreur lors du comptage des utilisateurs:", error);
     res.status(500).send("Erreur interne du serveur");
@@ -48,137 +50,141 @@ router.get("/users", isAdmin, async (req, res) => {
 });
 
 router.get("/users/new", isAdmin, async (req, res) => {
-    res.render("admin/userNew");
-  });
+  res.render("admin/userNew");
+});
 
 router.get("/users/edit/:id", isAdmin, async (req, res) => {
-    const userID = req.params.id;
-    try {
-      const user = await UserModel.findById(userID);
-      res.render("admin/userEdit", { user });
-    } catch (error) {
-      console.error("Erreur lors de la récupération de l'utilisateur:", error);
-      res.status(500).send("Erreur interne du serveur");
-    }
-  });
+  const userID = req.params.id;
+  try {
+    const user = await UserModel.findById(userID);
+    res.render("admin/userEdit", { user });
+  } catch (error) {
+    console.error("Erreur lors de la récupération de l'utilisateur:", error);
+    res.status(500).send("Erreur interne du serveur");
+  }
+});
 
-  router.post("/users/edit/:id", isAdmin, async (req, res) => {
-    const userID = req.params.id;
-    const { username, password, profile } = req.body;
-  
-    try {
-      const user = await UserModel.findById(userID);
-  
-      if (!user) {
-        req.flash('error', "Utilisateur non trouvé.");
-        return res.redirect('/admin/users');
-      }
-  
-      user.username = username;
-      user.profile = profile;
-  
-      if (password && password.trim() !== '') {
-        user.password = password;
-      }
-  
-      await user.save();
-  
-      req.flash('success', "Utilisateur mis à jour avec succès.");
-      res.redirect('/admin/users');
-    } catch (error) {
-      console.error("Erreur lors de la mise à jour de l'utilisateur:", error);
-      req.flash('error', "Erreur lors de la mise à jour de l'utilisateur.");
-      res.redirect(`/admin/users/edit/${userID}`);
+router.post("/users/edit/:id", isAdmin, async (req, res) => {
+  const userID = req.params.id;
+  const { username, password, profile } = req.body;
+
+  try {
+    const user = await UserModel.findById(userID);
+
+    if (!user) {
+      req.flash("error", "Utilisateur non trouvé.");
+      return res.redirect("/admin/users");
     }
-  });
-  
+
+    user.username = username;
+    user.profile = profile;
+
+    if (password && password.trim() !== "") {
+      user.password = password;
+    }
+
+    await user.save();
+
+    req.flash("success", "Utilisateur mis à jour avec succès.");
+    res.redirect("/admin/users");
+  } catch (error) {
+    console.error("Erreur lors de la mise à jour de l'utilisateur:", error);
+    req.flash("error", "Erreur lors de la mise à jour de l'utilisateur.");
+    res.redirect(`/admin/users/edit/${userID}`);
+  }
+});
 
 router.post("/users/new", isAdmin, async (req, res) => {
-    try {
-      const { username, password, profile} = req.body;
-  
-      const newUser = new UserModel({ username, password, profile });
-      await newUser.save();
+  try {
+    const { username, password, profile } = req.body;
 
-      res.redirect('/admin/users');
-    } catch (error) {
-      console.error("Erreur lors de la création de l'utilisateur:", error);
-      req.flash('error', 'Erreur lors de la création de l utilisateur.');
-      res.redirect('/admin/users/new');
+    const newUser = new UserModel({ username, password, profile });
+    await newUser.save();
+
+    res.redirect("/admin/users");
+  } catch (error) {
+    console.error("Erreur lors de la création de l'utilisateur:", error);
+    req.flash("error", "Erreur lors de la création de l utilisateur.");
+    res.redirect("/admin/users/new");
+  }
+});
+
+router.post("/users/delete/:id", isAdmin, async (req, res) => {
+  const userID = req.params.id;
+
+  try {
+    const user = await UserModel.findByIdAndDelete(userID);
+
+    if (!user) {
+      req.flash("error", "Utilisateur non trouvé ou déjà supprimé.");
+      return res.redirect("/admin/users");
     }
-  });
 
-  router.post("/users/delete/:id", isAdmin, async (req, res) => {
-    const userID = req.params.id;
-  
-    try {
-      const user = await UserModel.findByIdAndDelete(userID);
-  
-      if (!user) {
-        req.flash('error', "Utilisateur non trouvé ou déjà supprimé.");
-        return res.redirect('/admin/users');
-      }
-  
-      res.redirect('/admin/users');
-    } catch (error) {
-      console.error("Erreur lors de la suppression de l'utilisateur:", error);
-      req.flash('error', "Erreur lors de la suppression de l'utilisateur.");
-      res.redirect('/admin/users');
+    res.redirect("/admin/users");
+  } catch (error) {
+    console.error("Erreur lors de la suppression de l'utilisateur:", error);
+    req.flash("error", "Erreur lors de la suppression de l'utilisateur.");
+    res.redirect("/admin/users");
+  }
+});
+
+router.get("/reservs", isAdmin, async (req, res) => {
+  const results = {};
+
+  try {
+    results.totalCount = await ReservationModel.countDocuments();
+    results.reservs = await ReservationModel.find().populate("user");
+
+    results.reservs = results.reservs.map((reserv) => {
+      return {
+        ...reserv.toObject(),
+        reservationDate: reserv.reservationDate.toLocaleDateString("fr-FR", {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        }),
+      };
+    });
+
+    res.render("admin/reservs", { results });
+  } catch (error) {
+    console.error("Erreur lors de la récupération des réservations:", error);
+    res.status(500).send("Erreur interne du serveur");
+  }
+});
+
+router.post("/reservs/delete/:id", isAdmin, async (req, res) => {
+  const reservID = req.params.id;
+
+  try {
+    const reserv = await ReservationModel.findByIdAndDelete(reservID);
+
+    if (!reserv) {
+      req.flash("error", "Réservation non trouvé ou déjà supprimé.");
+      return res.redirect("/admin/reservs");
     }
-  });
 
-  router.get("/reservs", isAdmin, async (req, res) => {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
-  
-    const startIndex = (page - 1) * limit;
-    const endIndex = page * limit;
-  
-    const results = {};
-  
-    try {
-      results.totalCount = await ReservationModel.countDocuments();
-      results.reservs = await ReservationModel.find().limit(limit).skip(startIndex).populate('user');
+    res.redirect("/admin/reservs");
+  } catch (error) {
+    console.error("Erreur lors de la suppression de la réservation:", error);
+    req.flash("error", "Erreur lors de la suppression de la réservation.");
+    res.redirect("/admin/reservs");
+  }
+});
 
-      results.reservs = results.reservs.map(reserv => {
-        return {
-          ...reserv.toObject(),
-          reservationDate: reserv.reservationDate.toLocaleDateString('fr-FR', {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-          }),
-        };
-      });
-  
-      results.totalPages = Math.ceil(results.totalCount / limit);
-      results.currentPage = page;
-  
-      res.render("admin/reservs", { results });
-    } catch (error) {
-      console.error("Erreur lors de la récupération des réservations:", error);
-      res.status(500).send("Erreur interne du serveur");
-    }
-  });
+router.get("/rapports", isAdmin, async (req, res) => {
+  try {
+    const rapports = await RapportModel.find().populate({
+      path: "reservation",
+      populate: { path: "user" },
+    });
 
-  router.post("/reservs/delete/:id", isAdmin, async (req, res) => {
-    const reservID = req.params.id;
-  
-    try {
-      const reserv = await ReservationModel.findByIdAndDelete(reservID);
-  
-      if (!reserv) {
-        req.flash('error', "Réservation non trouvé ou déjà supprimé.");
-        return res.redirect('/admin/reservs');
-      }
-  
-      res.redirect('/admin/reservs');
-    } catch (error) {
-      console.error("Erreur lors de la suppression de la réservation:", error);
-      req.flash('error', "Erreur lors de la suppression de la réservation.");
-      res.redirect('/admin/reservs');
-    }
-  });
+    res.render("admin/rapports", { rapports });
+  } catch (error) {
+    console.error("Erreur lors de la récupération des rapports:", error);
+    res.status(500).send("Erreur interne du serveur");
+  }
+});
 
 module.exports = router;
